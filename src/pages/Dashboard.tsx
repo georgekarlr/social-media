@@ -55,7 +55,6 @@ const Dashboard: React.FC = () => {
             end.setHours(23, 59, 59, 999); // Set to end of day
 
             const data = await DashboardService.getStats(start, end);
-            console.log('Dashboard data:', data);
             setStats(data);
         } catch (err: any) {
             setError('Failed to load dashboard statistics.');

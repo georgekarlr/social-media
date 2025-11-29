@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Plus, Search, AlertTriangle, User } from 'lucide-react';
-import type { Customer, CreateCustomerParams, UpdateCustomerParams, CustomerFormInput } from '../types/customer';
+import { Plus, Search, AlertTriangle } from 'lucide-react';
+import type { Customer, UpdateCustomerParams, CustomerFormInput } from '../types/customer';
 import {CustomersService} from "../services/customerService.ts";
 import CustomerTable from "../components/customer/CustomerTable.tsx";
 import Modal from "../components/ui/Modal.tsx";

@@ -18,8 +18,6 @@ import {
     Settings,
     ShoppingCart,
     TrendingUp,
-    Users,
-    Package,
     ClipboardList,
     CheckCircle2,
     CalendarClock,
@@ -28,6 +26,8 @@ import {
     Receipt,
     RotateCcw
 } from 'lucide-react'
+import ProductsManager from "./pages/ProductsManager.tsx";
+import POSWizard from './pages/POSWizard';
 
 function App() {
     return (
@@ -92,11 +92,8 @@ function App() {
                         <ProtectedRoute>
                             <PersonaProtectedRoute>
                                 <Layout>
-                                    <PlaceholderPage
-                                        title="POS"
-                                        description="Point of Sale interface for processing transactions."
-                                        icon={ShoppingCart}
-                                    />
+                                    {/* POS Wizard */}
+                                    <POSWizard />
                                 </Layout>
                             </PersonaProtectedRoute>
                         </ProtectedRoute>
@@ -131,11 +128,7 @@ function App() {
                         <ProtectedRoute>
                             <PersonaProtectedRoute>
                                 <Layout>
-                                    <PlaceholderPage
-                                        title="Products"
-                                        description="Manage product catalog and inventory."
-                                        icon={Package}
-                                    />
+                                    <ProductsManager/>
                                 </Layout>
                             </PersonaProtectedRoute>
                         </ProtectedRoute>
