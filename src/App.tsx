@@ -9,9 +9,10 @@ import PlaceholderPage from './pages/PlaceholderPage'
 import PersonaManagement from './pages/PersonaManagement'
 import {
     BarChart3,
-    Settings,
-    LayoutDashboardIcon, TrendingUpIcon, ShoppingCart, Users, House
+    TrendingUpIcon, ShoppingCart, Users,
 } from 'lucide-react'
+import RentDashboard from "./pages/Dashboard.tsx";
+import PropertiesManager from "./pages/PropertiesManager.tsx";
 
 function App() {
     return (
@@ -27,11 +28,7 @@ function App() {
                         <ProtectedRoute>
                             <PersonaProtectedRoute>
                                 <Layout>
-                                    <PlaceholderPage
-                                        title="Dashboard"
-                                        description="Dashboard"
-                                        icon={LayoutDashboardIcon}
-                                        />
+                                    <RentDashboard/>
                                 </Layout>
                             </PersonaProtectedRoute>
                         </ProtectedRoute>
@@ -82,11 +79,7 @@ function App() {
                         <ProtectedRoute>
                             <PersonaProtectedRoute>
                                 <Layout>
-                                    <PlaceholderPage
-                                        title="Properties"
-                                        description="Properties"
-                                        icon={House}
-                                    />
+                                    <PropertiesManager/>
                                 </Layout>
                             </PersonaProtectedRoute>
                         </ProtectedRoute>
