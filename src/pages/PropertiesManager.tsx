@@ -1,6 +1,5 @@
 // components/properties/PropertiesManager.tsx
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
-import { useAuth } from "../contexts/AuthContext";
 import {
     Home,
     Plus,
@@ -22,7 +21,6 @@ import useCurrency from "../hooks/useCurrency.ts";
 
 const PropertiesManager: React.FC = () => {
     // Auth context (mostly for initial loading check, service handles API auth)
-    const { persona } = useAuth();
     const { currency } = useCurrency();
 
     // --- State ---

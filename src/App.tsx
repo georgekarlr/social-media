@@ -13,6 +13,8 @@ import {
 } from 'lucide-react'
 import RentDashboard from "./pages/Dashboard.tsx";
 import PropertiesManager from "./pages/PropertiesManager.tsx";
+import TenantsManager from "./pages/TenantsManager.tsx";
+import LeaseWizard from "./pages/LeaseWizard.tsx";
 
 function App() {
     return (
@@ -38,11 +40,7 @@ function App() {
                         <ProtectedRoute>
                             <PersonaProtectedRoute>
                                 <Layout>
-                                    <PlaceholderPage
-                                        title="Lease Wizard"
-                                        description="Create leases"
-                                        icon={ShoppingCart}
-                                    />
+                                    <LeaseWizard/>
                                 </Layout>
                             </PersonaProtectedRoute>
                         </ProtectedRoute>
@@ -65,11 +63,7 @@ function App() {
                         <ProtectedRoute>
                             <PersonaProtectedRoute>
                                 <Layout>
-                                    <PlaceholderPage
-                                        title="Tenants"
-                                        description="Tenants"
-                                        icon={Users}
-                                    />
+                                    <TenantsManager/>
                                 </Layout>
                             </PersonaProtectedRoute>
                         </ProtectedRoute>
