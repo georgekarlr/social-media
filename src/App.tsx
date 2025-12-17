@@ -5,16 +5,13 @@ import PersonaProtectedRoute from './components/PersonaProtectedRoute'
 import Layout from './components/layout/Layout'
 import LoginForm from './components/auth/LoginForm'
 import SignupForm from './components/auth/SignupForm'
-import PlaceholderPage from './pages/PlaceholderPage'
 import PersonaManagement from './pages/PersonaManagement'
-import {
-    BarChart3,
-    TrendingUpIcon, ShoppingCart, Users,
-} from 'lucide-react'
 import RentDashboard from "./pages/Dashboard.tsx";
 import PropertiesManager from "./pages/PropertiesManager.tsx";
 import TenantsManager from "./pages/TenantsManager.tsx";
 import LeaseWizard from "./pages/LeaseWizard.tsx";
+import LeasesManager from "./pages/LeasesManager.tsx";
+import AnalyticsDashboard from "./pages/AnalyticsDashboard.tsx";
 
 function App() {
     return (
@@ -49,11 +46,7 @@ function App() {
                         <ProtectedRoute>
                             <PersonaProtectedRoute>
                                 <Layout>
-                                    <PlaceholderPage
-                                        title="Leases"
-                                        description="Leases"
-                                        icon={TrendingUpIcon}
-                                    />
+                                    <LeasesManager/>
                                 </Layout>
                             </PersonaProtectedRoute>
                         </ProtectedRoute>
@@ -85,11 +78,7 @@ function App() {
                         <ProtectedRoute>
                             <PersonaProtectedRoute>
                                 <Layout>
-                                    <PlaceholderPage
-                                        title="Analytics"
-                                        description="Analytics"
-                                        icon={BarChart3}
-                                    />
+                                    <AnalyticsDashboard/>
                                 </Layout>
                             </PersonaProtectedRoute>
                         </ProtectedRoute>
