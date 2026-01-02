@@ -6,9 +6,9 @@ import Layout from './components/layout/Layout'
 import LoginForm from './components/auth/LoginForm'
 import SignupForm from './components/auth/SignupForm'
 import PersonaManagement from './pages/PersonaManagement'
-import PlaceholderPage from "./pages/PlaceholderPage.tsx";
-import {Home} from "lucide-react";
 import InventoryDashboard from "./pages/InventoryDashboard.tsx";
+import CategoriesManager from "./pages/CategoriesManager.tsx";
+import ProductsManager from "./pages/ProductsManager.tsx";
 
 function App() {
     return (
@@ -31,12 +31,21 @@ function App() {
                     } />
 
 
-
-                    <Route path="/management/properties" element={
+                    <Route path="/management/categories" element={
                         <ProtectedRoute>
                             <PersonaProtectedRoute>
                                 <Layout>
-                                    <PlaceholderPage title={"Das"} description={""} icon={Home}/>
+                                    <CategoriesManager/>
+                                </Layout>
+                            </PersonaProtectedRoute>
+                        </ProtectedRoute>
+                    } />
+
+                    <Route path="/management/products" element={
+                        <ProtectedRoute>
+                            <PersonaProtectedRoute>
+                                <Layout>
+                                    <ProductsManager/>
                                 </Layout>
                             </PersonaProtectedRoute>
                         </ProtectedRoute>
