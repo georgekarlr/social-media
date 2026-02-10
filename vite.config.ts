@@ -13,9 +13,9 @@ export default defineConfig({
                 enabled: true,
             },
             manifest: {
-                name: 'Inventory Pro',
-                short_name: 'Inventory Pro',
-                description: 'Manage your inventory with ease.',
+                name: 'Ceintelly',
+                short_name: 'Ceintelly',
+                description: 'Study with Ceintelly Social Media',
                 start_url: '/',
                 scope: '/',
                 display: 'standalone',

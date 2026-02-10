@@ -1,12 +1,14 @@
 import React, { useState } from 'react'
 import Sidebar from './Sidebar'
-import Header from './Header'
+import RightSidebar from './RightSidebar'
+import { Menu } from 'lucide-react'
 
 interface LayoutProps {
   children: React.ReactNode
 }
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
+  console.log('Layout rendering')
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   const toggleSidebar = () => {
@@ -18,23 +20,35 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Sidebar */}
-      <Sidebar isOpen={sidebarOpen} onClose={closeSidebar} />
-      
-      {/* Main content - full width */}
-      <div className="flex flex-col min-h-screen">
-        {/* Header */}
-        <Header onMenuClick={toggleSidebar} />
+    <div className="min-h-screen bg-white">
+      <div className="max-w-7xl mx-auto flex">
+        {/* Left Sidebar */}
+        <Sidebar isOpen={sidebarOpen} onClose={closeSidebar} />
         
-        {/* Page content */}
-        <main className="flex-1 relative overflow-y-auto focus:outline-none">
-          <div className="py-6">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              {children}
-            </div>
+        {/* Main Content Area */}
+        <div className="flex-1 flex flex-col min-h-screen border-r border-gray-100">
+          {/* Mobile Top Bar (Header replacement for mobile menu trigger) */}
+          <div className="lg:hidden sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b border-gray-100 h-16 flex items-center px-4">
+            <button
+              onClick={toggleSidebar}
+              className="p-2 rounded-full text-gray-500 hover:bg-gray-100 transition-colors"
+              aria-label="Open sidebar"
+            >
+              <Menu className="h-6 w-6" />
+            </button>
+            <h2 className="text-xl font-bold text-gray-900 ml-2">
+              Ceintelly
+            </h2>
           </div>
-        </main>
+          
+          {/* Page content */}
+          <main className="flex-1 relative focus:outline-none">
+            {children}
+          </main>
+        </div>
+
+        {/* Right Sidebar - Desktop Only */}
+        <RightSidebar />
       </div>
     </div>
   )

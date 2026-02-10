@@ -1,13 +1,18 @@
 import React from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { useAuth } from '../../contexts/AuthContext'
-import {
-  LayoutDashboard,
-  X,
-  Shield,
-  ChevronDown,
-  Users, BarChart3, LocationEdit, Boxes, Package, Shapes, MapPin, Activity,
+import { 
+  Home, 
+  Library, 
+  Search, 
+  Bell, 
+  Trophy, 
+  User, 
+  Settings,
+  LogOut,
+  BookOpen,
+  X
 } from 'lucide-react'
+import { useAuth } from '../../contexts/AuthContext'
 
 interface SidebarProps {
   isOpen: boolean
@@ -16,197 +21,118 @@ interface SidebarProps {
 
 type NavItem = {
   name: string
-  href?: string
-  icon?: React.ComponentType<{ className?: string }>
-  children?: NavItem[]
+  href: string
+  icon: React.ComponentType<{ className?: string }>
 }
 
-const adminNavigation: NavItem[] = [
-  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  {
-    name: 'Inventory',
-    children: [
-      { name: 'Stock On Hand', href: '/inventory/stock', icon: Boxes },
-      { name: 'Stock By Location', href: '/inventory/stock-by-location', icon: MapPin },
-    ],
-  },
-  {
-    name: 'Management',
-    children: [
-      { name: 'Categories', href: '/management/categories', icon: Shapes },
-      { name: 'Products', href: '/management/products', icon: Package },
-      { name: 'Locations', href: '/management/locations', icon: LocationEdit },
-      { name: 'Suppliers', href: '/management/suppliers', icon: Users },
-
-    ],
-  },
-  { name: 'Transactions', href: '/transactions', icon: Activity },
-  { name: 'Analytics', href: '/analytics', icon: BarChart3 },
-  { name: 'Persona Management', href: '/persona-management', icon: Shield },
+const navigation: NavItem[] = [
+  { name: 'Home', href: '/dashboard', icon: Home },
+  { name: 'Library', href: '/library', icon: Library },
+  { name: 'Explore', href: '/explore', icon: Search },
+  { name: 'Leaderboard', href: '/leaderboard', icon: Trophy },
+  { name: 'Notifications', href: '/notifications', icon: Bell },
+  { name: 'Profile', href: '/profile', icon: User },
+  { name: 'Settings', href: '/settings', icon: Settings },
 ]
 
-const staffNavigation: NavItem[] = [
-  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  {
-    name: 'Inventory',
-    children: [
-      { name: 'Stock On Hand', href: '/inventory/stock', icon: Boxes },
-      { name: 'Stock By Location', href: '/inventory/stock-by-location', icon: MapPin },
-    ],
-  },
-  {
-    name: 'Management',
-    children: [
-      { name: 'Categories', href: '/management/categories', icon: Shapes },
-      { name: 'Products', href: '/management/products', icon: Package },
-      { name: 'Locations', href: '/management/locations', icon: LocationEdit },
-      { name: 'Suppliers', href: '/management/suppliers', icon: Users },
-
-    ],
-  },
-  { name: 'Transactions', href: '/transactions', icon: Activity },
-  { name: 'Analytics', href: '/analytics', icon: BarChart3 },
-]
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const location = useLocation()
-  const { persona } = useAuth()
+  const { user, signOut } = useAuth()
 
-  // Determine navigation based on persona
-  const navigation = persona?.type === 'admin' ? adminNavigation : staffNavigation
-
-  // Track expanded/collapsed state for groups
-  const [expanded, setExpanded] = React.useState<Record<string, boolean>>(() => {
-    const initial: Record<string, boolean> = {}
-    ;(navigation || []).forEach((item) => {
-      if (item.children && item.children.length) {
-        initial[item.name] = item.children.some((c) => c.href === location.pathname)
-      }
-    })
-    return initial
-  })
-
-  const toggleGroup = (name: string) => {
-    setExpanded((prev) => ({ ...prev, [name]: !prev[name] }))
+  const handleLogout = async () => {
+    await signOut()
   }
 
-  // Ensure the group that contains the active route is expanded when route changes
-  React.useEffect(() => {
-    const activeGroup = navigation.find((item) => item.children?.some((c) => c.href === location.pathname))
-    if (activeGroup) {
-      setExpanded((prev) => ({ ...prev, [activeGroup.name]: true }))
-    }
-  }, [location.pathname])
 
   return (
     <>
       {/* Backdrop - shown on all screen sizes when sidebar is open */}
       {isOpen && (
         <div 
-          className="fixed inset-0 z-40 bg-gray-600 bg-opacity-75 backdrop-blur-sm"
+          className="fixed inset-0 z-40 bg-gray-600 bg-opacity-50 backdrop-blur-sm"
           onClick={onClose}
         />
       )}
 
       {/* Sidebar */}
       <div className={`
-        fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-xl transform transition-transform duration-300 ease-in-out
+        fixed inset-y-0 left-0 z-50 w-72 bg-white shadow-2xl transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-auto lg:shadow-none lg:border-r lg:border-gray-200
         ${isOpen ? 'translate-x-0' : '-translate-x-full'}
       `}>
         <div className="flex flex-col h-full">
-          {/* Header */}
-          <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200">
-            <div>
-              <h1 className="text-xl font-bold text-gray-900">Inventory Pro</h1>
-              {persona && (
-                <p className="text-xs text-gray-500">
-                  {persona.personName || (persona.type === 'admin' ? 'Admin' : (persona.loginName || 'Staff'))} Portal
-                </p>
-              )}
-            </div>
+          {/* Header - Mobile only close button */}
+          <div className="flex items-center justify-between h-16 px-6 lg:hidden border-b border-gray-100">
+            <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Ceintelly</h1>
             <button
               onClick={onClose}
-              className="p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 transition-colors"
+              className="p-2 rounded-full text-gray-400 hover:text-gray-500 hover:bg-gray-100 transition-colors"
               aria-label="Close sidebar"
             >
               <X className="h-5 w-5" />
             </button>
           </div>
 
-          {/* Navigation */}
-          <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
-            {navigation.map((item) => {
-              if (item.children && item.children.length) {
-                return (
-                  <div key={item.name} className="mt-2">
-                    <button
-                      type="button"
-                      onClick={() => toggleGroup(item.name)}
-                      aria-expanded={!!expanded[item.name]}
-                      className="w-full flex items-center justify-between px-3 py-2 text-xs font-semibold uppercase tracking-wider text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-md transition-colors"
-                    >
-                      <span>{item.name}</span>
-                      <ChevronDown className={`h-4 w-4 transition-transform ${expanded[item.name] ? 'rotate-180' : ''}`} />
-                    </button>
-                    {expanded[item.name] && (
-                      <div className="ml-2 mt-1 space-y-1">
-                        {item.children.map((child) => {
-                          const isActive = location.pathname === child.href
-                          const Icon = child.icon
-                          return (
-                            <Link
-                              key={child.name}
-                              to={child.href!}
-                              onClick={onClose}
-                              className={`
-                                flex items-center px-3 py-2 text-sm rounded-lg transition-all duration-200
-                                ${isActive
-                                  ? 'bg-blue-50 text-blue-700 border-r-2 border-blue-700'
-                                  : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
-                                }
-                              `}
-                            >
-                              {Icon && (
-                                <Icon className={`
-                                  h-5 w-5 mr-3 flex-shrink-0
-                                  ${isActive ? 'text-blue-700' : 'text-gray-400 group-hover:text-gray-500'}
-                                `} />
-                              )}
-                              {child.name}
-                            </Link>
-                          )
-                        })}
-                      </div>
-                    )}
-                  </div>
-                )
-              }
+          {/* Logo - Desktop */}
+          <div className="hidden lg:flex items-center h-16 px-6">
+            <h1 className="text-2xl font-black bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Ceintelly</h1>
+          </div>
 
+          {/* Navigation */}
+          <nav className="flex-1 px-4 py-4 space-y-2 overflow-y-auto">
+            {navigation.map((item) => {
               const isActive = location.pathname === item.href
               const Icon = item.icon
               return (
                 <Link
                   key={item.name}
-                  to={item.href!}
+                  to={item.href}
                   onClick={onClose}
                   className={`
-                    flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-200
+                    flex items-center px-4 py-3 text-base font-semibold rounded-xl transition-all duration-200
                     ${isActive
-                      ? 'bg-blue-50 text-blue-700 border-r-2 border-blue-700'
-                      : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
+                      ? 'bg-blue-50 text-blue-600'
+                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                     }
                   `}
                 >
-                  {Icon && (
-                    <Icon className={`
-                      h-5 w-5 mr-3 flex-shrink-0
-                      ${isActive ? 'text-blue-700' : 'text-gray-400 group-hover:text-gray-500'}
-                    `} />
-                  )}
+                  <Icon className={`
+                    h-6 w-6 mr-4 flex-shrink-0
+                    ${isActive ? 'text-blue-600' : 'text-gray-400 group-hover:text-gray-500'}
+                  `} />
                   {item.name}
                 </Link>
               )
             })}
           </nav>
+
+          {/* User Profile Summary (Bottom) */}
+          <div className="p-4 border-t border-gray-100">
+             <div className="flex items-center justify-between mb-4 px-2">
+               <div className="flex items-center space-x-3 overflow-hidden">
+                 <div className="h-10 w-10 flex-shrink-0 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-full flex items-center justify-center text-white font-bold shadow-sm">
+                   {user?.email?.[0].toUpperCase()}
+                 </div>
+                 <div className="flex flex-col min-w-0">
+                   <span className="text-sm font-bold text-gray-900 truncate">
+                     {user?.email?.split('@')[0]}
+                   </span>
+                   <span className="text-xs text-gray-500 truncate">
+                     {user?.email}
+                   </span>
+                 </div>
+               </div>
+               <button
+                 onClick={handleLogout}
+                 className="p-2 rounded-full text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
+                 title="Sign out"
+               >
+                 <LogOut className="h-5 w-5" />
+               </button>
+             </div>
+             <button className="w-full py-3 px-4 bg-blue-600 text-white font-bold rounded-full hover:bg-blue-700 transition-colors shadow-lg shadow-blue-200 lg:hidden">
+               Create
+             </button>
+          </div>
         </div>
       </div>
     </>
