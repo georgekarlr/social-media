@@ -1,6 +1,7 @@
 import React from 'react'
 
 const LoadingSpinner: React.FC = () => {
+  console.log('LoadingSpinner rendering')
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center">
       <div className="flex flex-col items-center space-y-4">
