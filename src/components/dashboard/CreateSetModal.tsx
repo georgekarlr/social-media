@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { studyService } from '../../services/studyService'
 import { Subject, CreateStudyItem, StudyItemType, FlashcardContent, QuizQuestionContent, NoteContent } from '../../types/study'
 import { Loader2, Plus, X, Brain, CheckSquare, FileText, Trash2, Edit2 } from 'lucide-react'
+import { useToast } from '../../contexts/ToastContext'
 
 interface CreateSetModalProps {
   isOpen: boolean
@@ -282,6 +283,7 @@ const ItemEditorModal: React.FC<ItemEditorModalProps> = ({ isOpen, onClose, onSa
 }
 
 const CreateSetModal: React.FC<CreateSetModalProps> = ({ isOpen, onClose }) => {
+  const { showToast } = useToast()
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [subjectId, setSubjectId] = useState<number | ''>('')
@@ -363,6 +365,7 @@ const CreateSetModal: React.FC<CreateSetModalProps> = ({ isOpen, onClose }) => {
         tags: tags.split(',').map(t => t.trim()).filter(Boolean),
         items: items.length > 0 ? items : undefined
       })
+      showToast('Study set created successfully!', 'success')
       onClose()
       // Reset form
       setTitle('')
@@ -371,7 +374,9 @@ const CreateSetModal: React.FC<CreateSetModalProps> = ({ isOpen, onClose }) => {
       setItems([])
       setTags('')
     } catch (err: any) {
-      setError(err?.message || 'Failed to create set')
+      const errorMessage = err?.message || 'Failed to create set'
+      setError(errorMessage)
+      showToast(errorMessage, 'error')
     } finally {
       setLoading(false)
     }

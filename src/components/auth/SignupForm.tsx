@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
 import { Link, Navigate } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
-import { Mail, Lock, AlertCircle, Eye, EyeOff, CheckCircle } from 'lucide-react'
+import { Mail, Lock, Eye, EyeOff } from 'lucide-react'
+import StatusMessage from '../ui/StatusMessage'
 
 const SignupForm: React.FC = () => {
   const [email, setEmail] = useState('')
@@ -9,9 +10,8 @@ const SignupForm: React.FC = () => {
   const [confirmPassword, setConfirmPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  const [error, setError] = useState('')
-  const [success, setSuccess] = useState('')
-  const [loading, setLoading] = useState(false)
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
+  const [message, setMessage] = useState('')
   const { signUp, user } = useAuth()
 
   if (user) {
@@ -20,25 +20,24 @@ const SignupForm: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setLoading(true)
-    setError('')
-    setSuccess('')
+    setStatus('loading')
+    setMessage('')
 
     if (password !== confirmPassword) {
-      setError('Passwords do not match')
-      setLoading(false)
+      setMessage('Passwords do not match')
+      setStatus('error')
       return
     }
 
     const { error } = await signUp(email, password)
     
     if (error) {
-      setError(error.message)
+      setMessage(error.message)
+      setStatus('error')
     } else {
-      setSuccess('Account created successfully! Please check your email to verify your account.')
+      setMessage('Account created successfully! Please check your email to verify your account.')
+      setStatus('success')
     }
-    
-    setLoading(false)
   }
 
   return (
@@ -55,19 +54,7 @@ const SignupForm: React.FC = () => {
         <div className="bg-white p-8 rounded-2xl border border-gray-100 shadow-xl shadow-blue-50/50">
           <h3 className="text-xl font-bold text-gray-900 mb-6">Create your account</h3>
           <form className="space-y-5" onSubmit={handleSubmit}>
-            {error && (
-              <div className="bg-red-50 border border-red-100 rounded-xl p-4 flex items-center space-x-3">
-                <AlertCircle className="h-5 w-5 text-red-500 flex-shrink-0" />
-                <p className="text-sm text-red-700">{error}</p>
-              </div>
-            )}
-
-            {success && (
-              <div className="bg-green-50 border border-green-100 rounded-xl p-4 flex items-center space-x-3">
-                <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0" />
-                <p className="text-sm text-green-700">{success}</p>
-              </div>
-            )}
+            <StatusMessage status={status} message={message} />
 
             <div>
               <div className="relative group">
@@ -150,10 +137,10 @@ const SignupForm: React.FC = () => {
 
             <button
               type="submit"
-              disabled={loading}
+              disabled={status === 'loading'}
               className="w-full flex justify-center py-3.5 px-4 border border-transparent rounded-full shadow-lg shadow-blue-200 text-base font-bold text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-95"
             >
-              {loading ? (
+              {status === 'loading' ? (
                 <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
               ) : (
                 'Create account'

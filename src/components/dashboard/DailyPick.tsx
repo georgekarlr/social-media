@@ -4,9 +4,10 @@ import { Sparkles, ArrowRight } from 'lucide-react';
 
 interface DailyPickProps {
   pick: DailyPickType | null;
+  onStudyNow?: (setId: string) => void;
 }
 
-const DailyPick: React.FC<DailyPickProps> = ({ pick }) => {
+const DailyPick: React.FC<DailyPickProps> = ({ pick, onStudyNow }) => {
   if (!pick) return null;
 
   return (
@@ -32,7 +33,10 @@ const DailyPick: React.FC<DailyPickProps> = ({ pick }) => {
              </span>
           </div>
           
-          <button className="flex items-center space-x-1 text-sm font-bold bg-white text-blue-600 px-4 py-2 rounded-full hover:bg-blue-50 transition-colors">
+          <button 
+            onClick={() => onStudyNow?.(pick.set.id)}
+            className="flex items-center space-x-1 text-sm font-bold bg-white text-blue-600 px-4 py-2 rounded-full hover:bg-blue-50 transition-colors"
+          >
             <span>Study Now</span>
             <ArrowRight className="h-4 w-4" />
           </button>

@@ -8,13 +8,17 @@ import ContinueStudying from '../components/dashboard/ContinueStudying'
 import RecommendationCard from '../components/dashboard/RecommendationCard'
 import UserStats from '../components/dashboard/UserStats'
 import CreateSetModal from '../components/dashboard/CreateSetModal'
+import StudyModal from '../components/study/StudyModal'
 import { Loader2, Plus } from 'lucide-react'
+import { useToast } from '../contexts/ToastContext'
 
 const FeedPage: React.FC = () => {
+  const { showToast } = useToast()
   const [dashboardData, setDashboardData] = useState<HomeDashboardResponse | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [studySetId, setStudySetId] = useState<string | null>(null)
 
   useEffect(() => {
     const fetchDashboard = async () => {
@@ -34,6 +38,17 @@ const FeedPage: React.FC = () => {
   }, [])
 
   console.log('FeedPage rendering')
+
+  const handleCloneSet = async (setId: string, title: string) => {
+    try {
+      const newSetId = await studyService.cloneSet(setId);
+      showToast(`Successfully cloned "${title}"!`, 'success');
+      // Optionally redirect or refresh. For now, just toast.
+    } catch (err: any) {
+      console.error('Failed to clone set:', err);
+      showToast(err?.message || 'Failed to clone study set', 'error');
+    }
+  };
 
   if (loading) {
     return (
@@ -71,7 +86,7 @@ const FeedPage: React.FC = () => {
 
       {dashboardData?.user_stats && <UserStats stats={dashboardData.user_stats} />}
 
-      {dashboardData?.daily_pick && <DailyPick pick={dashboardData.daily_pick} />}
+      {dashboardData?.daily_pick && <DailyPick pick={dashboardData.daily_pick} onStudyNow={(id) => setStudySetId(id)} />}
 
       {/* Trigger for the new modal */}
       <button 
@@ -93,9 +108,14 @@ const FeedPage: React.FC = () => {
       </button>
 
       <CreateSetModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <StudyModal 
+        setId={studySetId} 
+        isOpen={!!studySetId} 
+        onClose={() => setStudySetId(null)} 
+      />
       
       {dashboardData?.continue_studying && dashboardData.continue_studying.length > 0 && (
-        <ContinueStudying items={dashboardData.continue_studying} />
+        <ContinueStudying items={dashboardData.continue_studying} onPlay={(id) => setStudySetId(id)} />
       )}
 
       {/* Create Post Area */}
@@ -116,17 +136,26 @@ const FeedPage: React.FC = () => {
               // Map FeedItem to PostCard format
               const post = {
                 id: feedItem.set_id,
-                type: 'study_set',
+                type: 'study_set' as const,
                 author: {
                   name: feedItem.creator.username || 'Anonymous',
                   username: feedItem.creator.username ? `@${feedItem.creator.username}` : '@anonymous',
                   avatar: feedItem.creator.avatar || (feedItem.creator.username ? feedItem.creator.username.substring(0, 2).toUpperCase() : '??')
                 },
-                content: `Created a new study set: ${feedItem.title}`,
-                timestamp: 'Recent',
-                likes: 0,
-                comments: 0,
-                shares: 0
+                content: feedItem.description || `Created a new study set: ${feedItem.title}`,
+                timestamp: new Date(feedItem.created_at).toLocaleDateString(),
+                likes: feedItem.stats.like_count,
+                comments: feedItem.stats.comment_count,
+                shares: 0,
+                metadata: {
+                  title: feedItem.title,
+                  tags: feedItem.tags,
+                  subject: feedItem.subject,
+                  cards_count: feedItem.stats.cards_count,
+                  rating: feedItem.stats.average_rating
+                },
+                onStudyNow: () => setStudySetId(feedItem.set_id),
+                onClone: () => handleCloneSet(feedItem.set_id, feedItem.title)
               };
               return <PostCard key={`${feedItem.set_id}-${index}`} post={post} />;
             } else {

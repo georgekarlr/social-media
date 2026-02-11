@@ -1,13 +1,30 @@
 import { supabase } from '../lib/supabase';
-import { HomeDashboardResponse, StudySet, CreateFullSetParams, Subject } from '../types/study';
+import { HomeDashboardResponse, StudySet, CreateFullSetParams, Subject, GetSetForPlayResponse, FinishStudySessionParams } from '../types/study';
 
 export const studyService = {
+  /**
+   * Fetches a study set and its items for the study player.
+   */
+  async getSetForPlay(setId: string): Promise<GetSetForPlayResponse | null> {
+    const { data, error } = await supabase.rpc('c_get_set_for_play', {
+      target_set_id: setId,
+    });
+
+    if (error) {
+      console.error('Error fetching set for play:', error);
+      throw error;
+    }
+
+    return data as GetSetForPlayResponse;
+  },
+
   /**
    * Fetches the home dashboard data including daily pick, continue studying, and feed.
    */
   async getHomeDashboard(): Promise<HomeDashboardResponse | null> {
     const { data, error } = await supabase.rpc('c_get_home_dashboard');
 
+    console.log('Home dashboard data:', data);
     if (error) {
       console.error('Error fetching home dashboard:', error);
       throw error;
@@ -71,5 +88,68 @@ export const studyService = {
     }
 
     return data as string; // UUID of the new set
+  },
+
+  /**
+   * Clones a study set and returns the new set ID.
+   * @param originalSetId The ID of the set to clone.
+   */
+  async cloneSet(originalSetId: string): Promise<string> {
+    const { data, error } = await supabase.rpc('c_clone_set', {
+      original_set_id: originalSetId,
+    });
+
+    if (error) {
+      console.error('Error cloning study set:', error);
+      throw error;
+    }
+
+    return data as string; // UUID of the new set
+  },
+
+  /**
+   * Follows a user by their ID.
+   * @param targetUserId The ID of the user to follow.
+   */
+  async followUser(targetUserId: string): Promise<void> {
+    const { error } = await supabase.rpc('c_follow_user', {
+      target_user_id: targetUserId,
+    });
+
+    if (error) {
+      console.error('Error following user:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Unfollows a user by their ID.
+   * @param targetUserId The ID of the user to unfollow.
+   */
+  async unfollowUser(targetUserId: string): Promise<void> {
+    const { error } = await supabase.rpc('c_unfollow_user', {
+      target_user_id: targetUserId,
+    });
+
+    if (error) {
+      console.error('Error unfollowing user:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Finishes a study session and updates progress.
+   */
+  async finishStudySession(params: FinishStudySessionParams): Promise<void> {
+    const { error } = await supabase.rpc('c_finish_study_session', {
+      p_set_id: params.set_id,
+      p_duration_seconds: params.duration_seconds,
+      p_results: params.results,
+    });
+
+    if (error) {
+      console.error('Error finishing study session:', error);
+      throw error;
+    }
   },
 };
