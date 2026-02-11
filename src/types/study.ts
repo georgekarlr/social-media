@@ -34,6 +34,7 @@ export interface ContinueStudyingItem {
 }
 
 export interface Creator {
+  id: string;
   username: string;
   avatar: string | null;
 }
@@ -42,7 +43,22 @@ export interface FeedItem {
   type: 'feed';
   set_id: string;
   title: string;
+  description: string | null;
+  tags: string[];
+  created_at: string;
+  is_official: boolean;
   creator: Creator;
+  subject: {
+    name: string;
+    emoji: string | null;
+  };
+  stats: {
+    average_rating: number;
+    total_ratings: number;
+    cards_count: number;
+    like_count: number;
+    comment_count: number;
+  };
 }
 
 export interface RecommendedUser {
@@ -51,6 +67,7 @@ export interface RecommendedUser {
   username: string;
   avatar: string | null;
   xp: number;
+  bio: string | null;
 }
 
 export type FeedContent = FeedItem | RecommendedUser;
@@ -103,6 +120,52 @@ export interface UserStats {
   cards_due: number;
   minutes_today: number;
   pending_invites: number;
+}
+
+export interface StudyProgress {
+  box_level: number;
+  is_due: boolean;
+  last_reviewed: string | null;
+}
+
+export interface StudyItemPlay {
+  id: string;
+  type: StudyItemType;
+  position: number;
+  like_count: number;
+  comment_count: number;
+  is_liked: boolean;
+  study_data: StudyProgress;
+  content: FlashcardContent | QuizQuestionContent | NoteContent;
+}
+
+export interface StudySetPlay {
+  id: string;
+  title: string;
+  description: string | null;
+  subject: string;
+  emoji: string | null;
+  average_rating: number;
+  total_ratings: number;
+  creator: Creator;
+  total_likes: number;
+  total_comments: number;
+}
+
+export interface GetSetForPlayResponse {
+  set: StudySetPlay;
+  items: StudyItemPlay[];
+}
+
+export interface StudySessionResult {
+  item_id: string;
+  is_correct: boolean;
+}
+
+export interface FinishStudySessionParams {
+  set_id: string;
+  duration_seconds: number;
+  results: StudySessionResult[];
 }
 
 export interface HomeDashboardResponse {

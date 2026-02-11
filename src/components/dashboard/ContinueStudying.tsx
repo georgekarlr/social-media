@@ -4,9 +4,10 @@ import { Play, Clock } from 'lucide-react';
 
 interface ContinueStudyingProps {
   items: ContinueStudyingItem[];
+  onPlay?: (setId: string) => void;
 }
 
-const ContinueStudying: React.FC<ContinueStudyingProps> = ({ items }) => {
+const ContinueStudying: React.FC<ContinueStudyingProps> = ({ items, onPlay }) => {
   if (items.length === 0) return null;
 
   const formatDate = (dateString: string) => {
@@ -30,6 +31,7 @@ const ContinueStudying: React.FC<ContinueStudyingProps> = ({ items }) => {
         {items.map((item) => (
           <div 
             key={item.id} 
+            onClick={() => onPlay?.(item.id)}
             className="flex-shrink-0 w-64 bg-white border border-gray-100 rounded-xl p-4 hover:border-blue-200 hover:shadow-md transition-all cursor-pointer group"
           >
             <div className="flex items-start justify-between mb-3">
