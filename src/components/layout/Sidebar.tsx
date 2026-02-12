@@ -1,19 +1,19 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { 
   Home, 
   Library, 
   Search, 
   Bell, 
+  MessageSquare,
   Trophy, 
   User, 
   Settings,
-  LogOut,
-  Plus,
   X
 } from 'lucide-react'
 import { useAuth } from '../../contexts/AuthContext'
-import CreateSetModal from '../dashboard/CreateSetModal'
+import { useNotifications } from '../../contexts/NotificationContext'
+import { messageService } from '../../services/messageService'
 
 interface SidebarProps {
   isOpen: boolean
@@ -30,6 +30,7 @@ const navigation: NavItem[] = [
   { name: 'Home', href: '/dashboard', icon: Home },
   { name: 'Library', href: '/library', icon: Library },
   { name: 'Explore', href: '/explore', icon: Search },
+  { name: 'Messages', href: '/messages', icon: MessageSquare },
   { name: 'Leaderboard', href: '/leaderboard', icon: Trophy },
   { name: 'Notifications', href: '/notifications', icon: Bell },
   { name: 'Profile', href: '/profile', icon: User },
@@ -38,13 +39,27 @@ const navigation: NavItem[] = [
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const location = useLocation()
-  const { user, signOut } = useAuth()
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
+  const { user } = useAuth()
+  const { unreadCount } = useNotifications()
+  const [unreadMessagesCount, setUnreadMessagesCount] = useState(0)
 
-  const handleLogout = async () => {
-    await signOut()
-  }
+  useEffect(() => {
+    const fetchUnreadMessages = async () => {
+      try {
+        const count = await messageService.getUnreadMessagesCount();
+        setUnreadMessagesCount(count);
+      } catch (error) {
+        console.error('Error fetching unread messages count:', error);
+      }
+    };
 
+    if (user) {
+      fetchUnreadMessages();
+      // Optional: set up an interval or subscription
+      const interval = setInterval(fetchUnreadMessages, 60000); // every minute
+      return () => clearInterval(interval);
+    }
+  }, [user]);
 
   return (
     <>
@@ -102,6 +117,16 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                     ${isActive ? 'text-blue-600' : 'text-gray-400 group-hover:text-gray-500'}
                   `} />
                   {item.name}
+                  {item.name === 'Messages' && unreadMessagesCount > 0 && (
+                    <span className="ml-auto inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold bg-blue-500 text-white rounded-full">
+                      {unreadMessagesCount > 99 ? '99+' : unreadMessagesCount}
+                    </span>
+                  )}
+                  {item.name === 'Notifications' && unreadCount > 0 && (
+                    <span className="ml-auto inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold bg-red-500 text-white rounded-full">
+                      {unreadCount > 99 ? '99+' : unreadCount}
+                    </span>
+                  )}
                 </Link>
               )
             })}
@@ -109,44 +134,22 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
           {/* User Profile Summary (Bottom) */}
           <div className="p-4 border-t border-gray-100">
-             <button 
-               onClick={() => setIsCreateModalOpen(true)}
-               className="w-full mb-4 py-3 px-4 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-100 flex items-center justify-center space-x-2 active:scale-[0.98]"
-             >
-               <Plus className="h-5 w-5" />
-               <span>Create New Set</span>
-             </button>
-             
-             <div className="flex items-center justify-between px-2">
-               <div className="flex items-center space-x-3 overflow-hidden">
-                 <div className="h-10 w-10 flex-shrink-0 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-full flex items-center justify-center text-white font-bold shadow-sm">
-                   {user?.email?.[0].toUpperCase()}
-                 </div>
-                 <div className="flex flex-col min-w-0">
-                   <span className="text-sm font-bold text-gray-900 truncate">
-                     {user?.email?.split('@')[0]}
-                   </span>
-                   <span className="text-xs text-gray-500 truncate">
-                     {user?.email}
-                   </span>
-                 </div>
+             <div className="flex items-center space-x-3 px-2 overflow-hidden">
+               <div className="h-10 w-10 flex-shrink-0 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-full flex items-center justify-center text-white font-bold shadow-sm">
+                 {user?.email?.[0].toUpperCase()}
                </div>
-               <button
-                 onClick={handleLogout}
-                 className="p-2 rounded-full text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
-                 title="Sign out"
-               >
-                 <LogOut className="h-5 w-5" />
-               </button>
+               <div className="flex flex-col min-w-0">
+                 <span className="text-sm font-bold text-gray-900 truncate">
+                   {user?.email?.split('@')[0]}
+                 </span>
+                 <span className="text-xs text-gray-500 truncate">
+                   {user?.email}
+                 </span>
+               </div>
              </div>
           </div>
         </div>
       </div>
-
-      <CreateSetModal 
-        isOpen={isCreateModalOpen} 
-        onClose={() => setIsCreateModalOpen(false)} 
-      />
     </>
   )
 }

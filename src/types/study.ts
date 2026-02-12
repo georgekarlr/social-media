@@ -412,3 +412,17 @@ export interface ExploreInitialResponse {
   categories: Subject[];
   results: ExploreTrendingSet[];
 }
+
+export interface GetUserProfileResponse {
+  profile: UserProfileInfo;
+  sets: PublicSetSummary[];
+}
+
+export interface UserConnection {
+  id: string;
+  username: string;
+  full_name: string | null;
+  avatar_url: string | null;
+  total_xp: number;
+  is_following: boolean;
+}
