@@ -15,8 +15,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
 
   return (
-    <div className="min-h-screen bg-white overflow-x-hidden">
-      <div className="max-w-7xl mx-auto flex">
+    <div className="min-h-screen bg-white">
+      <div className="max-w-7xl mx-auto flex items-start">
         {/* Left Sidebar */}
         <Sidebar isOpen={false} onClose={() => {}} />
         

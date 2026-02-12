@@ -91,6 +91,15 @@ export interface RecommendedUser {
   bio: string | null;
 }
 
+export interface WhoToFollowUser {
+  id: string;
+  username: string;
+  full_name: string | null;
+  avatar_url: string | null;
+  total_xp: number;
+  is_relevant: boolean;
+}
+
 export type FeedContent = FeedItem | RecommendedUser;
 
 export type StudyItemType = 
@@ -187,6 +196,20 @@ export interface CreateFullSetParams {
   is_public: boolean;
   tags: string[];
   items?: CreateStudyItem[];
+}
+
+export interface UpdateStudyItem extends CreateStudyItem {
+  id?: string;
+}
+
+export interface UpdateFullSetParams {
+  set_id: string;
+  title: string;
+  description: string;
+  subject_id: number;
+  is_public: boolean;
+  tags: string[];
+  items: UpdateStudyItem[];
 }
 
 export interface UserStats {
@@ -339,7 +362,53 @@ export interface UserProfileInfo {
   is_own_profile: boolean;
 }
 
-export interface GetUserProfileResponse {
-  profile: UserProfileInfo | null;
-  sets: PublicSetSummary[];
+export interface ExploreTrendingSet {
+  id: string;
+  title: string;
+  description: string | null;
+  average_rating: number;
+  total_ratings: number;
+  created_at: string;
+  cards_count: number;
+  creator: {
+    username: string | null;
+    avatar_url: string | null;
+  };
+  subject: {
+    name: string | null;
+    emoji: string | null;
+  } | null;
+}
+
+export interface SearchUserResult {
+  id: string;
+  username: string;
+  full_name: string | null;
+  avatar_url: string | null;
+  total_xp: number;
+  level: number;
+  followers_count: number;
+  is_following: boolean;
+}
+
+export interface SearchSetResult {
+  id: string;
+  title: string;
+  description: string | null;
+  average_rating: number;
+  total_ratings: number;
+  cards_count: number;
+  creator: {
+    username: string | null;
+    avatar_url: string | null;
+  };
+  subject: {
+    name: string | null;
+    emoji: string | null;
+  } | null;
+}
+
+export interface ExploreInitialResponse {
+  categories: Subject[];
+  results: ExploreTrendingSet[];
 }

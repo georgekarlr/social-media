@@ -1,12 +1,23 @@
 import React, { useState, useEffect } from 'react'
 import { studyService } from '../../services/studyService'
-import { Subject, CreateStudyItem, StudyItemType, FlashcardContent, QuizQuestionContent, NoteContent, MatchingPairsContent, OrderSequenceContent, CheckboxQuestionContent, WrittenAnswerContent } from '../../types/study'
+import { Subject, CreateStudyItem, UpdateStudyItem, StudyItemType, FlashcardContent, QuizQuestionContent, NoteContent, MatchingPairsContent, OrderSequenceContent, CheckboxQuestionContent, WrittenAnswerContent } from '../../types/study'
 import { Loader2, Plus, X, Brain, CheckSquare, FileText, Trash2, Edit2, GitMerge, ListOrdered, Type, CheckCircle2 } from 'lucide-react'
 import { useToast } from '../../contexts/ToastContext'
 
 interface CreateSetModalProps {
   isOpen: boolean
   onClose: () => void
+  onSuccess?: () => void
+  mode?: 'create' | 'edit'
+  initialData?: {
+    id: string
+    title: string
+    description: string
+    subject_id: number
+    is_public: boolean
+    tags: string[]
+    items: UpdateStudyItem[]
+  }
 }
 
 interface ItemEditorModalProps {
@@ -624,14 +635,14 @@ const ItemEditorModal: React.FC<ItemEditorModalProps> = ({ isOpen, onClose, onSa
   )
 }
 
-const CreateSetModal: React.FC<CreateSetModalProps> = ({ isOpen, onClose }) => {
+const CreateSetModal: React.FC<CreateSetModalProps> = ({ isOpen, onClose, onSuccess, mode = 'create', initialData }) => {
   const { showToast } = useToast()
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [subjectId, setSubjectId] = useState<number | ''>('')
   const [isPublic, setIsPublic] = useState(true)
   const [tags, setTags] = useState('')
-  const [items, setItems] = useState<CreateStudyItem[]>([])
+  const [items, setItems] = useState<UpdateStudyItem[]>([])
   const [loading, setLoading] = useState(false)
   const [subjects, setSubjects] = useState<Subject[]>([])
   const [subjectsLoading, setSubjectsLoading] = useState(true)
@@ -639,8 +650,26 @@ const CreateSetModal: React.FC<CreateSetModalProps> = ({ isOpen, onClose }) => {
 
   // Item Editor State
   const [isEditorOpen, setIsEditorOpen] = useState(false)
-  const [editingItem, setEditingItem] = useState<CreateStudyItem | undefined>()
+  const [editingItem, setEditingItem] = useState<UpdateStudyItem | undefined>()
   const [editingIndex, setEditingIndex] = useState<number | undefined>()
+
+  useEffect(() => {
+    if (isOpen && initialData && mode === 'edit') {
+      setTitle(initialData.title)
+      setDescription(initialData.description || '')
+      setSubjectId(initialData.subject_id)
+      setIsPublic(initialData.is_public)
+      setTags(initialData.tags?.join(', ') || '')
+      setItems(initialData.items || [])
+    } else if (isOpen && mode === 'create') {
+      setTitle('')
+      setDescription('')
+      setSubjectId('')
+      setIsPublic(true)
+      setTags('')
+      setItems([])
+    }
+  }, [isOpen, initialData, mode])
 
   useEffect(() => {
     if (isOpen) {
@@ -699,22 +728,40 @@ const CreateSetModal: React.FC<CreateSetModalProps> = ({ isOpen, onClose }) => {
 
     try {
       setLoading(true)
-      await studyService.createFullSet({
-        title: title.trim(),
-        description: description.trim(),
-        subject_id: Number(subjectId),
-        is_public: isPublic,
-        tags: tags.split(',').map(t => t.trim()).filter(Boolean),
-        items: items.length > 0 ? items : undefined
-      })
-      showToast('Study set created successfully!', 'success')
+      if (mode === 'edit' && initialData) {
+        await studyService.updateFullSet({
+          set_id: initialData.id,
+          title: title.trim(),
+          description: description.trim(),
+          subject_id: Number(subjectId),
+          is_public: isPublic,
+          tags: tags.split(',').map(t => t.trim()).filter(Boolean),
+          items: items
+        })
+        showToast('Study set updated successfully!', 'success')
+      } else {
+        await studyService.createFullSet({
+          title: title.trim(),
+          description: description.trim(),
+          subject_id: Number(subjectId),
+          is_public: isPublic,
+          tags: tags.split(',').map(t => t.trim()).filter(Boolean),
+          items: items.length > 0 ? items : undefined
+        })
+        showToast('Study set created successfully!', 'success')
+      }
+      
+      onSuccess?.()
       onClose()
-      // Reset form
-      setTitle('')
-      setDescription('')
-      setSubjectId('')
-      setItems([])
-      setTags('')
+      
+      if (mode === 'create') {
+        // Reset form
+        setTitle('')
+        setDescription('')
+        setSubjectId('')
+        setItems([])
+        setTags('')
+      }
     } catch (err: any) {
       const errorMessage = err?.message || 'Failed to create set'
       setError(errorMessage)
@@ -732,8 +779,17 @@ const CreateSetModal: React.FC<CreateSetModalProps> = ({ isOpen, onClose }) => {
         {/* Header */}
         <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-white sticky top-0 z-10">
           <h2 className="text-2xl font-bold text-gray-900 flex items-center">
-            <Plus className="h-6 w-6 mr-2 text-blue-600" />
-            Create Study Set
+            {mode === 'edit' ? (
+              <>
+                <Edit2 className="h-6 w-6 mr-2 text-blue-600" />
+                Edit Study Set
+              </>
+            ) : (
+              <>
+                <Plus className="h-6 w-6 mr-2 text-blue-600" />
+                Create Study Set
+              </>
+            )}
           </h2>
           <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
             <X className="h-6 w-6 text-gray-500" />
@@ -930,7 +986,7 @@ const CreateSetModal: React.FC<CreateSetModalProps> = ({ isOpen, onClose }) => {
               className="bg-blue-600 text-white font-bold px-10 py-3 rounded-xl hover:bg-blue-700 transition-all disabled:opacity-50 disabled:grayscale flex items-center shadow-xl shadow-blue-100"
             >
               {loading && <Loader2 className="h-5 w-5 mr-2 animate-spin" />}
-              Publish Set
+              {mode === 'edit' ? 'Save Changes' : 'Publish Set'}
             </button>
           </div>
         </div>

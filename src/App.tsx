@@ -6,6 +6,8 @@ import SignupForm from './components/auth/SignupForm'
 import ProtectedRoute from './components/ProtectedRoute'
 import Layout from './components/layout/Layout'
 import FeedPage from './pages/FeedPage'
+import ExplorePage from './pages/ExplorePage'
+import LibraryPage from './pages/LibraryPage'
 import PlaceholderPage from './pages/PlaceholderPage'
 import UserProfilePage from './pages/UserProfilePage'
 import { 
@@ -42,10 +44,10 @@ function App() {
 
                         {/* Placeholder routes for navigation items */}
                         <Route path="/library" element={
-                            <ProtectedRoute><Layout><PlaceholderPage title="Library" description="Your collection of study decks and notes." icon={Library} /></Layout></ProtectedRoute>
+                            <ProtectedRoute><Layout><LibraryPage /></Layout></ProtectedRoute>
                         } />
                         <Route path="/explore" element={
-                            <ProtectedRoute><Layout><PlaceholderPage title="Explore" description="Discover new study materials and topics." icon={Search} /></Layout></ProtectedRoute>
+                            <ProtectedRoute><Layout><ExplorePage /></Layout></ProtectedRoute>
                         } />
                         <Route path="/leaderboard" element={
                             <ProtectedRoute><Layout><PlaceholderPage title="Leaderboard" description="See how you rank against other learners." icon={Trophy} /></Layout></ProtectedRoute>

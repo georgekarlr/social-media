@@ -1,5 +1,5 @@
 import { supabase } from '../lib/supabase';
-import { HomeDashboardResponse, StudySet, CreateFullSetParams, Subject, GetSetForPlayResponse, FinishStudySessionParams, FinishStudySessionResponse, ItemLiker, StudyComment, RateSetParams, RateSetResponse, GetUserProfileResponse, ContinueStudyingSet, ContinueStudyingItem } from '../types/study';
+import { HomeDashboardResponse, StudySet, CreateFullSetParams, UpdateFullSetParams, Subject, GetSetForPlayResponse, FinishStudySessionParams, FinishStudySessionResponse, ItemLiker, StudyComment, RateSetParams, RateSetResponse, GetUserProfileResponse, ContinueStudyingSet, ContinueStudyingItem, ExploreInitialResponse, SearchUserResult, SearchSetResult, WhoToFollowUser } from '../types/study';
 
 export interface ToggleReactionResponse {
   is_liked: boolean;
@@ -48,6 +48,30 @@ export const studyService = {
   },
 
   /**
+   * Fetches initial explore page data (categories and trending sets).
+   */
+  async getExploreInitial(
+    filter_subject_ids?: number[] | null,
+    sort_by: 'trending' | 'newest' | 'top_rated' = 'trending',
+    limit_count: number = 20,
+    offset_count: number = 0
+  ): Promise<ExploreInitialResponse | null> {
+    const { data, error } = await supabase.rpc('c_get_explore_initial', {
+      filter_subject_ids,
+      sort_by,
+      limit_count,
+      offset_count,
+    });
+
+    if (error) {
+      console.error('Error fetching explore initial data:', error);
+      throw error;
+    }
+
+    return data as ExploreInitialResponse;
+  },
+
+  /**
    * Fetch paginated list of continue-studying sets for the current user.
    */
   async getContinueStudying(limit: number = 50, offset: number = 0): Promise<ContinueStudyingSet[]> {
@@ -66,8 +90,65 @@ export const studyService = {
   },
 
   /**
+   * Searches for users using the new search API.
+   * @param search_query The term to search for.
+   * @param limit_count Maximum number of results.
+   */
+  async searchUsers(search_query: string, limit_count: number = 20): Promise<SearchUserResult[]> {
+    const { data, error } = await supabase.rpc('c_search_users', {
+      search_query,
+      limit_count,
+    });
+
+    if (error) {
+      console.error('Error searching users:', error);
+      throw error;
+    }
+
+    return (data || []) as SearchUserResult[];
+  },
+
+  /**
+   * Fetches "Who to Follow" recommendations for the current user.
+   */
+  async getWhoToFollow(limit_count: number = 5): Promise<WhoToFollowUser[]> {
+    const { data, error } = await supabase.rpc('c_get_who_to_follow', {
+      limit_count,
+    });
+
+    if (error) {
+      console.error('Error fetching who to follow recommendations:', error);
+      return [];
+    }
+
+    return (data || []) as WhoToFollowUser[];
+  },
+
+  /**
+   * Searches for study sets using the new search API.
+   * @param search_query The term to search for.
+   * @param subject_filter Optional subject/category ID filter.
+   * @param limit_count Maximum number of results.
+   */
+  async searchSets(search_query: string, subject_filter: number | null = null, limit_count: number = 20): Promise<SearchSetResult[]> {
+    const { data, error } = await supabase.rpc('c_search_sets', {
+      search_query,
+      subject_filter,
+      limit_count,
+    });
+
+    if (error) {
+      console.error('Error searching sets:', error);
+      throw error;
+    }
+
+    return (data || []) as SearchSetResult[];
+  },
+
+  /**
    * Searches for study sets using fuzzy search.
    * @param searchTerm The term to search for.
+   * @deprecated Use searchSets instead
    */
   async searchStudySets(searchTerm: string): Promise<StudySet[]> {
     const { data, error } = await supabase.rpc('c_search_sets_fuzzy', {
@@ -120,6 +201,43 @@ export const studyService = {
     }
 
     return data as string; // UUID of the new set
+  },
+
+  /**
+   * Updates a full study set via RPC.
+   */
+  async updateFullSet(params: UpdateFullSetParams): Promise<void> {
+    const { error } = await supabase.rpc('c_update_full_set', {
+      p_set_id: params.set_id,
+      p_title: params.title,
+      p_description: params.description,
+      p_subject_id: params.subject_id,
+      p_is_public: params.is_public,
+      p_tags: params.tags,
+      p_items: params.items,
+    });
+
+    if (error) {
+      console.error('Error updating study set:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Deletes a study set via RPC.
+   */
+  async deleteSet(setId: string, softDelete: boolean = false): Promise<boolean> {
+    const { data, error } = await supabase.rpc('c_delete_set', {
+      p_set_id: setId,
+      p_soft_delete: softDelete,
+    });
+
+    if (error) {
+      console.error('Error deleting study set:', error);
+      throw error;
+    }
+
+    return data as boolean;
   },
 
   /**
