@@ -63,73 +63,75 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         <Sidebar isOpen={false} onClose={() => {}} />
         
         {/* Main Content Area */}
-        <div className={`flex-1 flex flex-col min-h-screen border-r border-gray-100 ${hideBottomNav ? '' : 'pb-28 lg:pb-0'} min-w-0`}>
+        <div className={`flex-1 flex flex-col min-h-screen border-r border-gray-100 ${hideBottomNav ? 'h-screen' : 'pb-28 lg:pb-0'} min-w-0`}>
           {/* Mobile Top Bar */}
-          <div className="lg:hidden sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-gray-100 h-16 flex items-center justify-between px-4">
-            <div className="flex items-center gap-2">
-              <h2 className="text-xl font-black bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                Ceintelly
-              </h2>
-              <div className="h-4 w-[1px] bg-gray-200 mx-1" />
-              <span className="text-sm font-bold text-gray-900">{pageTitle}</span>
+          {!isChatPage && (
+            <div className="lg:hidden sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-gray-100 h-16 flex items-center justify-between px-4">
+              <div className="flex items-center gap-2">
+                <h2 className="text-xl font-black bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                  Ceintelly
+                </h2>
+                <div className="h-4 w-[1px] bg-gray-200 mx-1" />
+                <span className="text-sm font-bold text-gray-900">{pageTitle}</span>
+              </div>
+              <div className="flex items-center space-x-1">
+                <Link
+                  to="/messages"
+                  className={`relative p-2 rounded-full transition-colors ${
+                    location.pathname === '/messages' 
+                      ? 'text-blue-600 bg-blue-50' 
+                      : 'text-gray-500 hover:bg-gray-100'
+                  }`}
+                  aria-label="Messages"
+                >
+                  <MessageSquare className="h-6 w-6" />
+                  {unreadMessagesCount > 0 && (
+                    <span className="absolute top-1.5 right-1.5 inline-flex items-center justify-center min-w-[16px] h-4 px-1 text-[10px] font-bold bg-blue-500 text-white rounded-full ring-2 ring-white">
+                      {unreadMessagesCount > 99 ? '99+' : unreadMessagesCount}
+                    </span>
+                  )}
+                </Link>
+                <Link
+                  to="/leaderboard"
+                  className={`p-2 rounded-full transition-colors ${
+                    location.pathname === '/leaderboard' 
+                      ? 'text-blue-600 bg-blue-50' 
+                      : 'text-gray-500 hover:bg-gray-100'
+                  }`}
+                  aria-label="Leaderboard"
+                >
+                  <Trophy className="h-6 w-6" />
+                </Link>
+                <Link
+                  to="/notifications"
+                  className={`relative p-2 rounded-full transition-colors ${
+                    location.pathname === '/notifications' 
+                      ? 'text-blue-600 bg-blue-50' 
+                      : 'text-gray-500 hover:bg-gray-100'
+                  }`}
+                  aria-label="Notifications"
+                >
+                  <Bell className="h-6 w-6" />
+                  {unreadCount > 0 && (
+                    <span className="absolute top-1.5 right-1.5 inline-flex items-center justify-center min-w-[16px] h-4 px-1 text-[10px] font-bold bg-red-500 text-white rounded-full ring-2 ring-white">
+                      {unreadCount > 99 ? '99+' : unreadCount}
+                    </span>
+                  )}
+                </Link>
+                <Link
+                  to="/settings"
+                  className={`p-2 rounded-full transition-colors ${
+                    location.pathname === '/settings' 
+                      ? 'text-blue-600 bg-blue-50' 
+                      : 'text-gray-500 hover:bg-gray-100'
+                  }`}
+                  aria-label="Settings"
+                >
+                  <Settings className="h-6 w-6" />
+                </Link>
+              </div>
             </div>
-            <div className="flex items-center space-x-1">
-              <Link
-                to="/messages"
-                className={`relative p-2 rounded-full transition-colors ${
-                  location.pathname === '/messages' 
-                    ? 'text-blue-600 bg-blue-50' 
-                    : 'text-gray-500 hover:bg-gray-100'
-                }`}
-                aria-label="Messages"
-              >
-                <MessageSquare className="h-6 w-6" />
-                {unreadMessagesCount > 0 && (
-                  <span className="absolute top-1.5 right-1.5 inline-flex items-center justify-center min-w-[16px] h-4 px-1 text-[10px] font-bold bg-blue-500 text-white rounded-full ring-2 ring-white">
-                    {unreadMessagesCount > 99 ? '99+' : unreadMessagesCount}
-                  </span>
-                )}
-              </Link>
-              <Link
-                to="/leaderboard"
-                className={`p-2 rounded-full transition-colors ${
-                  location.pathname === '/leaderboard' 
-                    ? 'text-blue-600 bg-blue-50' 
-                    : 'text-gray-500 hover:bg-gray-100'
-                }`}
-                aria-label="Leaderboard"
-              >
-                <Trophy className="h-6 w-6" />
-              </Link>
-              <Link
-                to="/notifications"
-                className={`relative p-2 rounded-full transition-colors ${
-                  location.pathname === '/notifications' 
-                    ? 'text-blue-600 bg-blue-50' 
-                    : 'text-gray-500 hover:bg-gray-100'
-                }`}
-                aria-label="Notifications"
-              >
-                <Bell className="h-6 w-6" />
-                {unreadCount > 0 && (
-                  <span className="absolute top-1.5 right-1.5 inline-flex items-center justify-center min-w-[16px] h-4 px-1 text-[10px] font-bold bg-red-500 text-white rounded-full ring-2 ring-white">
-                    {unreadCount > 99 ? '99+' : unreadCount}
-                  </span>
-                )}
-              </Link>
-              <Link
-                to="/settings"
-                className={`p-2 rounded-full transition-colors ${
-                  location.pathname === '/settings' 
-                    ? 'text-blue-600 bg-blue-50' 
-                    : 'text-gray-500 hover:bg-gray-100'
-                }`}
-                aria-label="Settings"
-              >
-                <Settings className="h-6 w-6" />
-              </Link>
-            </div>
-          </div>
+          )}
           
           {/* Page content */}
           <main className="flex-1 relative focus:outline-none">
