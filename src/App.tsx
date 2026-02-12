@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from './contexts/AuthContext'
 import { ToastProvider } from './contexts/ToastContext'
+import { NotificationProvider } from './contexts/NotificationContext'
 import LoginForm from './components/auth/LoginForm'
 import SignupForm from './components/auth/SignupForm'
 import ProtectedRoute from './components/ProtectedRoute'
@@ -10,10 +11,17 @@ import ExplorePage from './pages/ExplorePage'
 import LibraryPage from './pages/LibraryPage'
 import PlaceholderPage from './pages/PlaceholderPage'
 import UserProfilePage from './pages/UserProfilePage'
+import ProfilePage from './pages/ProfilePage'
+import SettingsPage from './pages/SettingsPage'
+import NotificationsPage from './pages/NotificationsPage'
+import MessagesPage from './pages/MessagesPage'
+import ChatPage from './pages/ChatPage'
+import UserConnectionsPage from './pages/UserConnectionsPage'
 import { 
     Library, 
     Search, 
     Trophy, 
+    MessageSquare,
     Bell, 
     User, 
     Settings 
@@ -24,8 +32,9 @@ function App() {
     return (
         <AuthProvider>
             <ToastProvider>
-                <Router>
-                    <Routes>
+                <NotificationProvider>
+                    <Router>
+                        <Routes>
                         {/* Public routes */}
                         <Route path="/login" element={<LoginForm />} />
                         <Route path="/signup" element={<SignupForm />} />
@@ -49,14 +58,20 @@ function App() {
                         <Route path="/explore" element={
                             <ProtectedRoute><Layout><ExplorePage /></Layout></ProtectedRoute>
                         } />
+                        <Route path="/messages" element={
+                            <ProtectedRoute><Layout><MessagesPage /></Layout></ProtectedRoute>
+                        } />
+                        <Route path="/messages/:conversationId" element={
+                            <ProtectedRoute><Layout><ChatPage /></Layout></ProtectedRoute>
+                        } />
                         <Route path="/leaderboard" element={
                             <ProtectedRoute><Layout><PlaceholderPage title="Leaderboard" description="See how you rank against other learners." icon={Trophy} /></Layout></ProtectedRoute>
                         } />
                         <Route path="/notifications" element={
-                            <ProtectedRoute><Layout><PlaceholderPage title="Notifications" description="Stay updated on your learning activity." icon={Bell} /></Layout></ProtectedRoute>
+                            <ProtectedRoute><Layout><NotificationsPage /></Layout></ProtectedRoute>
                         } />
                         <Route path="/profile" element={
-                            <ProtectedRoute><Layout><PlaceholderPage title="Profile" description="Manage your account and study stats." icon={User} /></Layout></ProtectedRoute>
+                            <ProtectedRoute><Layout><ProfilePage /></Layout></ProtectedRoute>
                         } />
                         {/* Public profile by username */}
                         <Route path="/u/:username" element={
@@ -66,8 +81,15 @@ function App() {
                                 </Layout>
                             </ProtectedRoute>
                         } />
+                        <Route path="/u/:username/connections" element={
+                            <ProtectedRoute>
+                                <Layout>
+                                    <UserConnectionsPage />
+                                </Layout>
+                            </ProtectedRoute>
+                        } />
                         <Route path="/settings" element={
-                            <ProtectedRoute><Layout><PlaceholderPage title="Settings" description="Customize your learning experience." icon={Settings} /></Layout></ProtectedRoute>
+                            <ProtectedRoute><Layout><SettingsPage /></Layout></ProtectedRoute>
                         } />
 
                         {/* Redirect root to dashboard */}
@@ -83,6 +105,7 @@ function App() {
                         } />
                     </Routes>
                 </Router>
+                </NotificationProvider>
             </ToastProvider>
         </AuthProvider>
     )

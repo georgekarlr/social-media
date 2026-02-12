@@ -110,7 +110,7 @@ const FeedPage: React.FC = () => {
       )}
 
         {/* Trigger for the new modal */}
-        <button
+        {/*<button
             onClick={() => setIsModalOpen(true)}
             className="w-full mb-6 p-3 sm:p-4 bg-white border border-gray-100 rounded-2xl flex items-center justify-between hover:bg-gray-50 transition-colors group"
         >
@@ -126,7 +126,7 @@ const FeedPage: React.FC = () => {
             <div className="bg-blue-600 text-white text-xs font-bold px-2.5 sm:px-3 py-1.5 rounded-lg shadow-md shadow-blue-100 flex-shrink-0 ml-2">
                 Quick Create
             </div>
-        </button>
+        </button>*/}
       {/* Feed Content */}
       <div className="space-y-6">
         <h2 className="text-lg font-bold text-gray-900 px-1">

@@ -1,5 +1,5 @@
 import { supabase } from '../lib/supabase';
-import { HomeDashboardResponse, StudySet, CreateFullSetParams, UpdateFullSetParams, Subject, GetSetForPlayResponse, FinishStudySessionParams, FinishStudySessionResponse, ItemLiker, StudyComment, RateSetParams, RateSetResponse, GetUserProfileResponse, ContinueStudyingSet, ContinueStudyingItem, ExploreInitialResponse, SearchUserResult, SearchSetResult, WhoToFollowUser } from '../types/study';
+import { HomeDashboardResponse, StudySet, CreateFullSetParams, UpdateFullSetParams, Subject, GetSetForPlayResponse, FinishStudySessionParams, FinishStudySessionResponse, ItemLiker, StudyComment, RateSetParams, RateSetResponse, GetUserProfileResponse, ContinueStudyingSet, ContinueStudyingItem, ExploreInitialResponse, SearchUserResult, SearchSetResult, WhoToFollowUser, UserConnection } from '../types/study';
 
 export interface ToggleReactionResponse {
   is_liked: boolean;
@@ -431,5 +431,31 @@ export const studyService = {
     }
 
     return data as GetUserProfileResponse | null;
+  },
+
+  /**
+   * Fetches user connections (followers or following).
+   */
+  async getUserConnections(
+    targetUserId: string,
+    connectionType: 'followers' | 'following' = 'followers',
+    searchQuery: string | null = null,
+    limitCount: number = 20,
+    offsetCount: number = 0
+  ): Promise<UserConnection[]> {
+    const { data, error } = await supabase.rpc('c_get_user_connections', {
+      target_user_id: targetUserId,
+      connection_type: connectionType,
+      search_query: searchQuery,
+      limit_count: limitCount,
+      offset_count: offsetCount
+    });
+
+    if (error) {
+      console.error(`Error fetching user ${connectionType}:`, error);
+      throw error;
+    }
+
+    return (data || []) as UserConnection[];
   },
 };
