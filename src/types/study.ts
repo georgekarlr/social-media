@@ -33,10 +33,30 @@ export interface ContinueStudyingItem {
   last_active: string;
 }
 
+// Full detail for Continue Studying modal (from c_get_continue_studying)
+export interface ContinueStudyingSet {
+  id: string;
+  title: string;
+  average_rating: number | null;
+  total_ratings: number | null;
+  last_active: string;
+  creator: {
+    id: string;
+    username: string | null;
+    avatar_url: string | null;
+  };
+  subject: {
+    name: string | null;
+    emoji: string | null;
+  } | null;
+  cards_due: number;
+}
+
 export interface Creator {
   id: string;
   username: string;
   avatar: string | null;
+  avatar_url?: string | null;
 }
 
 export interface FeedItem {
@@ -59,6 +79,7 @@ export interface FeedItem {
     like_count: number;
     comment_count: number;
   };
+  is_bookmarked?: boolean;
 }
 
 export interface RecommendedUser {
@@ -72,7 +93,14 @@ export interface RecommendedUser {
 
 export type FeedContent = FeedItem | RecommendedUser;
 
-export type StudyItemType = 'flashcard' | 'quiz_question' | 'note';
+export type StudyItemType = 
+  | 'flashcard' 
+  | 'quiz_question' 
+  | 'note' 
+  | 'matching_pairs' 
+  | 'order_sequence' 
+  | 'checkbox_question' 
+  | 'written_answer';
 
 export interface FlashcardContent {
   front: string;
@@ -99,9 +127,57 @@ export interface NoteContent {
   attachment_url?: string;
 }
 
+export interface MatchingPair {
+  left: string;
+  right: string;
+}
+
+export interface MatchingPairsContent {
+  question?: string;
+  pairs: MatchingPair[];
+  explanation?: string;
+}
+
+export interface OrderSequenceItem {
+  text: string;
+}
+
+export interface OrderSequenceContent {
+  question?: string;
+  items: OrderSequenceItem[];
+  explanation?: string;
+}
+
+export interface CheckboxOption {
+  id: number;
+  text: string;
+}
+
+export interface CheckboxQuestionContent {
+  question: string;
+  options: CheckboxOption[];
+  correct_option_ids: number[];
+  explanation?: string;
+}
+
+export interface WrittenAnswerContent {
+  question: string;
+  accepted_answers: string[];
+  explanation?: string;
+}
+
+export type StudyItemContent = 
+  | FlashcardContent 
+  | QuizQuestionContent 
+  | NoteContent 
+  | MatchingPairsContent 
+  | OrderSequenceContent 
+  | CheckboxQuestionContent 
+  | WrittenAnswerContent;
+
 export interface CreateStudyItem {
   type: StudyItemType;
-  content: FlashcardContent | QuizQuestionContent | NoteContent;
+  content: StudyItemContent;
 }
 
 export interface CreateFullSetParams {
@@ -135,8 +211,9 @@ export interface StudyItemPlay {
   like_count: number;
   comment_count: number;
   is_liked: boolean;
+  is_bookmarked?: boolean;
   study_data: StudyProgress;
-  content: FlashcardContent | QuizQuestionContent | NoteContent;
+  content: StudyItemContent;
 }
 
 export interface StudySetPlay {
@@ -147,9 +224,11 @@ export interface StudySetPlay {
   emoji: string | null;
   average_rating: number;
   total_ratings: number;
+  created_at: string;
   creator: Creator;
   total_likes: number;
   total_comments: number;
+  is_bookmarked?: boolean;
 }
 
 export interface GetSetForPlayResponse {
@@ -162,10 +241,50 @@ export interface StudySessionResult {
   is_correct: boolean;
 }
 
+export interface ItemLiker {
+  user_id: string;
+  username: string;
+  full_name: string | null;
+  avatar_url: string | null;
+  liked_at: string;
+}
+
+export interface CommentUser {
+  id: string;
+  username: string;
+  avatar_url: string | null;
+}
+
+export interface CommentReply {
+  id: string;
+  content: string;
+  created_at: string;
+  user: CommentUser;
+}
+
+export interface StudyComment {
+  id: string;
+  content: string;
+  created_at: string;
+  user: CommentUser;
+  replies: CommentReply[];
+  parent_id?: string | null;
+}
+
 export interface FinishStudySessionParams {
   set_id: string;
   duration_seconds: number;
   results: StudySessionResult[];
+}
+
+export interface FinishStudySessionResponse {
+  xp_earned: number;
+  total_xp: number;
+  new_streak: number;
+  streak_increased: boolean;
+  cards_reviewed: number;
+  correct_count: number;
+  accuracy: number;
 }
 
 export interface HomeDashboardResponse {
@@ -174,4 +293,53 @@ export interface HomeDashboardResponse {
   continue_studying: ContinueStudyingItem[];
   feed_type: 'following' | 'recommendations';
   feed_content: FeedContent[];
+}
+
+export interface RateSetParams {
+  p_set_id: string;
+  p_rating: number;
+  p_review?: string;
+}
+
+export interface RateSetResponse {
+  new_average: number;
+  new_total: number;
+}
+
+// User profile viewing API types
+export interface PublicSetSummarySubject {
+  name: string | null;
+  emoji: string | null;
+}
+
+export interface PublicSetSummary {
+  id: string;
+  title: string;
+  description: string | null;
+  average_rating: number;
+  total_ratings: number;
+  created_at: string;
+  cards_count: number;
+  subject: PublicSetSummarySubject | null;
+}
+
+export interface UserProfileInfo {
+  id: string;
+  username: string;
+  full_name: string | null;
+  bio: string | null;
+  avatar_url: string | null;
+  level: number;
+  total_xp: number;
+  streak: number;
+  joined_at: string;
+  followers_count: number;
+  following_count: number;
+  is_following: boolean;
+  is_own_profile: boolean;
+}
+
+export interface GetUserProfileResponse {
+  profile: UserProfileInfo | null;
+  sets: PublicSetSummary[];
 }

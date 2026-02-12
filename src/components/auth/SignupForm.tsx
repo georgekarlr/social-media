@@ -41,18 +41,18 @@ const SignupForm: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white flex flex-col items-center justify-center px-4 py-12">
+    <div className="min-h-screen bg-white flex flex-col items-center justify-center px-4 py-8 sm:py-12">
       <div className="max-w-md w-full">
-        <div className="text-center mb-10">
-          <h1 className="text-5xl font-black bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-4">
+        <div className="text-center mb-6 sm:mb-10">
+          <h1 className="text-4xl sm:text-5xl font-black bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-2 sm:mb-4">
             Ceintelly
           </h1>
-          <h2 className="text-2xl font-bold text-gray-900">Join the community</h2>
-          <p className="mt-2 text-gray-600">Start your social learning journey today.</p>
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Join the community</h2>
+          <p className="mt-1 sm:mt-2 text-sm sm:text-base text-gray-600 px-4">Start your social learning journey today.</p>
         </div>
         
-        <div className="bg-white p-8 rounded-2xl border border-gray-100 shadow-xl shadow-blue-50/50">
-          <h3 className="text-xl font-bold text-gray-900 mb-6">Create your account</h3>
+        <div className="bg-white p-6 sm:p-8 rounded-2xl sm:border sm:border-gray-100 sm:shadow-xl sm:shadow-blue-50/50">
+          <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-5 sm:mb-6">Create your account</h3>
           <form className="space-y-5" onSubmit={handleSubmit}>
             <StatusMessage status={status} message={message} />
 

@@ -7,6 +7,7 @@ import ProtectedRoute from './components/ProtectedRoute'
 import Layout from './components/layout/Layout'
 import FeedPage from './pages/FeedPage'
 import PlaceholderPage from './pages/PlaceholderPage'
+import UserProfilePage from './pages/UserProfilePage'
 import { 
     Library, 
     Search, 
@@ -54,6 +55,14 @@ function App() {
                         } />
                         <Route path="/profile" element={
                             <ProtectedRoute><Layout><PlaceholderPage title="Profile" description="Manage your account and study stats." icon={User} /></Layout></ProtectedRoute>
+                        } />
+                        {/* Public profile by username */}
+                        <Route path="/u/:username" element={
+                            <ProtectedRoute>
+                                <Layout>
+                                    <UserProfilePage />
+                                </Layout>
+                            </ProtectedRoute>
                         } />
                         <Route path="/settings" element={
                             <ProtectedRoute><Layout><PlaceholderPage title="Settings" description="Customize your learning experience." icon={Settings} /></Layout></ProtectedRoute>
