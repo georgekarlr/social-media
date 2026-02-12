@@ -126,9 +126,9 @@ const ChatPage: React.FC = () => {
   if (!conversation) return null;
 
   return (
-    <div className="relative flex flex-col h-[calc(100vh-4rem)] lg:h-screen bg-gray-50/30 overflow-hidden">
+    <div className="flex flex-col h-[100dvh] bg-gray-50/30 overflow-hidden relative lg:h-screen">
       {/* Chat Header */}
-      <div className="fixed top-[4.5rem] lg:top-4 left-4 right-4 lg:left-[19rem] lg:right-[4rem] xl:right-[21rem] z-20 p-4 border border-gray-100 bg-white/80 backdrop-blur-md flex items-center shrink-0 rounded-2xl shadow-sm">
+      <div className="sticky top-0 z-20 p-4 border-b border-gray-100 bg-white/80 backdrop-blur-md flex items-center shrink-0 shadow-sm">
         <button
           onClick={() => navigate('/messages')}
           className="p-2 mr-2 -ml-2 text-gray-400 hover:text-gray-600 rounded-full transition-colors"
@@ -158,7 +158,7 @@ const ChatPage: React.FC = () => {
       </div>
 
       {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto p-4 md:p-6 bg-gray-50/50 pt-24 pb-28">
+      <div className="flex-1 overflow-y-auto p-4 md:p-6 bg-gray-50/50">
         {loadingMessages ? (
           <div className="flex flex-col items-center justify-center h-full">
             <Loader2 className="h-8 w-8 text-blue-600 animate-spin mb-2" />
@@ -166,9 +166,11 @@ const ChatPage: React.FC = () => {
           </div>
         ) : messages.length > 0 ? (
           <>
-            {messages.map((msg) => (
-              <MessageBubble key={msg.id} message={msg} />
-            ))}
+            <div className="space-y-4">
+              {messages.map((msg) => (
+                <MessageBubble key={msg.id} message={msg} />
+              ))}
+            </div>
             <div ref={messagesEndRef} />
           </>
         ) : (
@@ -183,14 +185,14 @@ const ChatPage: React.FC = () => {
       </div>
 
       {/* Message Input */}
-      <div className="fixed bottom-6 left-4 right-4 lg:left-[19rem] lg:right-[4rem] xl:right-[21rem] z-20 p-2 bg-white/80 backdrop-blur-md border border-gray-100 rounded-2xl shadow-lg shrink-0">
-        <form onSubmit={handleSendMessage} className="relative">
+      <div className="sticky bottom-0 z-20 p-4 bg-white/80 backdrop-blur-md border-t border-gray-100 shrink-0">
+        <form onSubmit={handleSendMessage} className="relative max-w-4xl mx-auto">
           <input
             type="text"
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             placeholder="Type a message..."
-            className="w-full pl-4 pr-12 py-3 bg-transparent border-none rounded-xl text-sm focus:ring-2 focus:ring-blue-100 transition-all"
+            className="w-full pl-4 pr-12 py-3 bg-gray-100 border-none rounded-xl text-sm focus:ring-2 focus:ring-blue-100 transition-all"
           />
           <button
             type="submit"
