@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react'
-import CreatePost from '../components/feed/CreatePost'
 import PostCard from '../components/feed/PostCard'
 import { studyService } from '../services/studyService'
 import { HomeDashboardResponse, FeedItem, RecommendedUser } from '../types/study'
 import DailyPick from '../components/dashboard/DailyPick'
 import ContinueStudying from '../components/dashboard/ContinueStudying'
+import ContinueStudyingModal from '../components/dashboard/ContinueStudyingModal'
 import RecommendationCard from '../components/dashboard/RecommendationCard'
 import UserStats from '../components/dashboard/UserStats'
 import CreateSetModal from '../components/dashboard/CreateSetModal'
@@ -18,6 +18,7 @@ const FeedPage: React.FC = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isContinueModalOpen, setIsContinueModalOpen] = useState(false)
   const [studySetId, setStudySetId] = useState<string | null>(null)
 
   useEffect(() => {
@@ -73,39 +74,21 @@ const FeedPage: React.FC = () => {
   }
 
   return (
-    <div className="max-w-2xl mx-auto lg:mx-0 p-4">
+    <div className="w-full max-w-2xl mx-auto lg:mx-0 p-4">
       {/* Feed Tabs */}
-      <div className="flex border-b border-gray-100 sticky top-0 lg:top-0 bg-white/80 backdrop-blur-md z-20 mb-6">
-        <button className="flex-1 py-4 text-sm font-bold text-gray-900 hover:bg-gray-50 transition-colors border-b-4 border-blue-600">
+      {/*<div className="flex border-b border-gray-100 sticky top-16 lg:top-0 bg-white/95 backdrop-blur-md z-20 mb-6">
+        <button className="flex-1 py-4 text-sm sm:text-base font-bold text-gray-900 hover:bg-gray-50 transition-colors border-b-4 border-blue-600">
           For You
         </button>
-        <button className="flex-1 py-4 text-sm font-bold text-gray-500 hover:bg-gray-50 transition-colors border-b-4 border-transparent">
+        <button className="flex-1 py-4 text-sm sm:text-base font-bold text-gray-500 hover:bg-gray-50 transition-colors border-b-4 border-transparent">
           Following
         </button>
-      </div>
+      </div>*/}
 
       {dashboardData?.user_stats && <UserStats stats={dashboardData.user_stats} />}
 
       {dashboardData?.daily_pick && <DailyPick pick={dashboardData.daily_pick} onStudyNow={(id) => setStudySetId(id)} />}
 
-      {/* Trigger for the new modal */}
-      <button 
-        onClick={() => setIsModalOpen(true)}
-        className="w-full mb-6 p-4 bg-white border border-gray-100 rounded-2xl flex items-center justify-between hover:bg-gray-50 transition-colors group"
-      >
-        <div className="flex items-center">
-          <div className="h-10 w-10 rounded-full bg-blue-50 flex items-center justify-center mr-3 group-hover:bg-blue-100 transition-colors">
-            <Plus className="h-6 w-6 text-blue-600" />
-          </div>
-          <div className="text-left">
-            <p className="font-bold text-gray-900">Create a new study set</p>
-            <p className="text-xs text-gray-500">Add flashcards, quizzes, or notes</p>
-          </div>
-        </div>
-        <div className="bg-blue-600 text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow-md shadow-blue-100">
-          Quick Create
-        </div>
-      </button>
 
       <CreateSetModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
       <StudyModal 
@@ -113,16 +96,37 @@ const FeedPage: React.FC = () => {
         isOpen={!!studySetId} 
         onClose={() => setStudySetId(null)} 
       />
+      <ContinueStudyingModal 
+        isOpen={isContinueModalOpen}
+        onClose={() => setIsContinueModalOpen(false)}
+        onPlay={(id) => {
+          setIsContinueModalOpen(false)
+          setStudySetId(id)
+        }}
+      />
       
       {dashboardData?.continue_studying && dashboardData.continue_studying.length > 0 && (
-        <ContinueStudying items={dashboardData.continue_studying} onPlay={(id) => setStudySetId(id)} />
+        <ContinueStudying items={dashboardData.continue_studying} onPlay={(id) => setStudySetId(id)} onSeeAll={() => setIsContinueModalOpen(true)} />
       )}
 
-      {/* Create Post Area */}
-      <div className="mb-8">
-        <CreatePost />
-      </div>
-
+        {/* Trigger for the new modal */}
+        <button
+            onClick={() => setIsModalOpen(true)}
+            className="w-full mb-6 p-3 sm:p-4 bg-white border border-gray-100 rounded-2xl flex items-center justify-between hover:bg-gray-50 transition-colors group"
+        >
+            <div className="flex items-center min-w-0">
+                <div className="h-9 w-9 sm:h-10 sm:w-10 rounded-full bg-blue-50 flex items-center justify-center mr-3 group-hover:bg-blue-100 transition-colors flex-shrink-0">
+                    <Plus className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" />
+                </div>
+                <div className="text-left min-w-0">
+                    <p className="font-bold text-gray-900 text-base truncate">Create a new study set</p>
+                    <p className="text-xs text-gray-500 truncate">Add flashcards, quizzes, or notes</p>
+                </div>
+            </div>
+            <div className="bg-blue-600 text-white text-xs font-bold px-2.5 sm:px-3 py-1.5 rounded-lg shadow-md shadow-blue-100 flex-shrink-0 ml-2">
+                Quick Create
+            </div>
+        </button>
       {/* Feed Content */}
       <div className="space-y-6">
         <h2 className="text-lg font-bold text-gray-900 px-1">
@@ -155,7 +159,8 @@ const FeedPage: React.FC = () => {
                   rating: feedItem.stats.average_rating
                 },
                 onStudyNow: () => setStudySetId(feedItem.set_id),
-                onClone: () => handleCloneSet(feedItem.set_id, feedItem.title)
+                onClone: () => handleCloneSet(feedItem.set_id, feedItem.title),
+                is_bookmarked: feedItem.is_bookmarked
               };
               return <PostCard key={`${feedItem.set_id}-${index}`} post={post} />;
             } else {

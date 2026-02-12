@@ -11,7 +11,7 @@ const DailyPick: React.FC<DailyPickProps> = ({ pick, onStudyNow }) => {
   if (!pick) return null;
 
   return (
-    <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl p-6 text-white mb-6 shadow-lg relative overflow-hidden">
+    <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl p-4 sm:p-6 text-white mb-6 shadow-lg relative overflow-hidden">
       <div className="relative z-10">
         <div className="flex items-center space-x-2 mb-2">
           <Sparkles className="h-5 w-5 text-yellow-300" />
@@ -25,17 +25,17 @@ const DailyPick: React.FC<DailyPickProps> = ({ pick, onStudyNow }) => {
         
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-             <span className="bg-white/20 px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-sm">
+             <span className="bg-white/20 px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-sm truncate max-w-[100px] sm:max-w-none">
                {pick.set.subject}
              </span>
-             <span className="flex items-center text-xs font-medium text-yellow-300">
+             <span className="flex items-center text-xs font-medium text-yellow-300 flex-shrink-0">
                ★ {pick.set.average_rating.toFixed(1)}
              </span>
           </div>
           
           <button 
             onClick={() => onStudyNow?.(pick.set.id)}
-            className="flex items-center space-x-1 text-sm font-bold bg-white text-blue-600 px-4 py-2 rounded-full hover:bg-blue-50 transition-colors"
+            className="flex items-center space-x-1 text-sm font-bold bg-white text-blue-600 px-4 py-2 rounded-full hover:bg-blue-50 transition-colors flex-shrink-0"
           >
             <span>Study Now</span>
             <ArrowRight className="h-4 w-4" />

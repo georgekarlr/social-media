@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { 
   Home, 
@@ -9,10 +9,11 @@ import {
   User, 
   Settings,
   LogOut,
-  BookOpen,
+  Plus,
   X
 } from 'lucide-react'
 import { useAuth } from '../../contexts/AuthContext'
+import CreateSetModal from '../dashboard/CreateSetModal'
 
 interface SidebarProps {
   isOpen: boolean
@@ -38,6 +39,7 @@ const navigation: NavItem[] = [
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const location = useLocation()
   const { user, signOut } = useAuth()
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
 
   const handleLogout = async () => {
     await signOut()
@@ -56,7 +58,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
       {/* Sidebar */}
       <div className={`
-        fixed inset-y-0 left-0 z-50 w-72 bg-white shadow-2xl transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-auto lg:shadow-none lg:border-r lg:border-gray-200
+        fixed inset-y-0 left-0 z-50 w-72 bg-white shadow-2xl transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:sticky lg:top-0 lg:inset-auto lg:shadow-none lg:border-r lg:border-gray-200 h-screen overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]
         ${isOpen ? 'translate-x-0' : '-translate-x-full'}
       `}>
         <div className="flex flex-col h-full">
@@ -107,7 +109,15 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
           {/* User Profile Summary (Bottom) */}
           <div className="p-4 border-t border-gray-100">
-             <div className="flex items-center justify-between mb-4 px-2">
+             <button 
+               onClick={() => setIsCreateModalOpen(true)}
+               className="w-full mb-4 py-3 px-4 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-100 flex items-center justify-center space-x-2 active:scale-[0.98]"
+             >
+               <Plus className="h-5 w-5" />
+               <span>Create New Set</span>
+             </button>
+             
+             <div className="flex items-center justify-between px-2">
                <div className="flex items-center space-x-3 overflow-hidden">
                  <div className="h-10 w-10 flex-shrink-0 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-full flex items-center justify-center text-white font-bold shadow-sm">
                    {user?.email?.[0].toUpperCase()}
@@ -129,12 +139,14 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                  <LogOut className="h-5 w-5" />
                </button>
              </div>
-             <button className="w-full py-3 px-4 bg-blue-600 text-white font-bold rounded-full hover:bg-blue-700 transition-colors shadow-lg shadow-blue-200 lg:hidden">
-               Create
-             </button>
           </div>
         </div>
       </div>
+
+      <CreateSetModal 
+        isOpen={isCreateModalOpen} 
+        onClose={() => setIsCreateModalOpen(false)} 
+      />
     </>
   )
 }

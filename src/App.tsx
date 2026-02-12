@@ -6,7 +6,10 @@ import SignupForm from './components/auth/SignupForm'
 import ProtectedRoute from './components/ProtectedRoute'
 import Layout from './components/layout/Layout'
 import FeedPage from './pages/FeedPage'
+import ExplorePage from './pages/ExplorePage'
+import LibraryPage from './pages/LibraryPage'
 import PlaceholderPage from './pages/PlaceholderPage'
+import UserProfilePage from './pages/UserProfilePage'
 import { 
     Library, 
     Search, 
@@ -41,10 +44,10 @@ function App() {
 
                         {/* Placeholder routes for navigation items */}
                         <Route path="/library" element={
-                            <ProtectedRoute><Layout><PlaceholderPage title="Library" description="Your collection of study decks and notes." icon={Library} /></Layout></ProtectedRoute>
+                            <ProtectedRoute><Layout><LibraryPage /></Layout></ProtectedRoute>
                         } />
                         <Route path="/explore" element={
-                            <ProtectedRoute><Layout><PlaceholderPage title="Explore" description="Discover new study materials and topics." icon={Search} /></Layout></ProtectedRoute>
+                            <ProtectedRoute><Layout><ExplorePage /></Layout></ProtectedRoute>
                         } />
                         <Route path="/leaderboard" element={
                             <ProtectedRoute><Layout><PlaceholderPage title="Leaderboard" description="See how you rank against other learners." icon={Trophy} /></Layout></ProtectedRoute>
@@ -54,6 +57,14 @@ function App() {
                         } />
                         <Route path="/profile" element={
                             <ProtectedRoute><Layout><PlaceholderPage title="Profile" description="Manage your account and study stats." icon={User} /></Layout></ProtectedRoute>
+                        } />
+                        {/* Public profile by username */}
+                        <Route path="/u/:username" element={
+                            <ProtectedRoute>
+                                <Layout>
+                                    <UserProfilePage />
+                                </Layout>
+                            </ProtectedRoute>
                         } />
                         <Route path="/settings" element={
                             <ProtectedRoute><Layout><PlaceholderPage title="Settings" description="Customize your learning experience." icon={Settings} /></Layout></ProtectedRoute>
