@@ -9,11 +9,13 @@ import {
   Trophy, 
   User, 
   Settings,
-  X
+  X,
+  LogOut
 } from 'lucide-react'
 import { useAuth } from '../../contexts/AuthContext'
 import { useNotifications } from '../../contexts/NotificationContext'
 import { messageService } from '../../services/messageService'
+import LogoutConfirmationModal from '../ui/LogoutConfirmationModal'
 
 interface SidebarProps {
   isOpen: boolean
@@ -39,9 +41,21 @@ const navigation: NavItem[] = [
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const location = useLocation()
-  const { user } = useAuth()
+  const { user, signOut } = useAuth()
   const { unreadCount } = useNotifications()
   const [unreadMessagesCount, setUnreadMessagesCount] = useState(0)
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false)
+  const [isLoggingOut, setIsLoggingOut] = useState(false)
+
+  const handleLogout = async () => {
+    setIsLoggingOut(true)
+    try {
+      await signOut()
+    } catch (error) {
+      console.error('Error signing out:', error)
+      setIsLoggingOut(false)
+    }
+  }
 
   useEffect(() => {
     const fetchUnreadMessages = async () => {
@@ -133,7 +147,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           </nav>
 
           {/* User Profile Summary (Bottom) */}
-          <div className="p-4 border-t border-gray-100">
+          <div className="p-4 border-t border-gray-100 space-y-4">
              <div className="flex items-center space-x-3 px-2 overflow-hidden">
                <div className="h-10 w-10 flex-shrink-0 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-full flex items-center justify-center text-white font-bold shadow-sm">
                  {user?.email?.[0].toUpperCase()}
@@ -147,9 +161,24 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                  </span>
                </div>
              </div>
+
+             <button
+               onClick={() => setIsLogoutModalOpen(true)}
+               className="w-full flex items-center px-4 py-2 text-sm font-semibold text-red-600 hover:bg-red-50 rounded-xl transition-colors group"
+             >
+               <LogOut className="h-5 w-5 mr-3 text-red-400 group-hover:text-red-600 transition-colors" />
+               Sign Out
+             </button>
           </div>
         </div>
       </div>
+
+      <LogoutConfirmationModal
+        isOpen={isLogoutModalOpen}
+        onClose={() => setIsLogoutModalOpen(false)}
+        onConfirm={handleLogout}
+        loading={isLoggingOut}
+      />
     </>
   )
 }

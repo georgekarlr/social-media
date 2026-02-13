@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { 
   LogOut, 
   HelpCircle, 
@@ -9,13 +9,20 @@ import {
   ExternalLink
 } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
+import LogoutConfirmationModal from '../components/ui/LogoutConfirmationModal'
 
 const SettingsPage: React.FC = () => {
   const { signOut, user } = useAuth()
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false)
+  const [isLoggingOut, setIsLoggingOut] = useState(false)
 
   const handleLogout = async () => {
-    if (window.confirm('Are you sure you want to sign out?')) {
+    setIsLoggingOut(true)
+    try {
       await signOut()
+    } catch (error) {
+      console.error('Error signing out:', error)
+      setIsLoggingOut(false)
     }
   }
 
@@ -59,7 +66,7 @@ const SettingsPage: React.FC = () => {
           
           <div className="mt-8 pt-6 border-t border-gray-50">
             <button
-              onClick={handleLogout}
+              onClick={() => setIsLogoutModalOpen(true)}
               className="flex items-center justify-between w-full px-4 py-3 text-red-600 bg-red-50 hover:bg-red-100 rounded-xl transition-colors font-bold group"
             >
               <div className="flex items-center">
@@ -71,6 +78,13 @@ const SettingsPage: React.FC = () => {
           </div>
         </div>
       </div>
+
+      <LogoutConfirmationModal
+        isOpen={isLogoutModalOpen}
+        onClose={() => setIsLogoutModalOpen(false)}
+        onConfirm={handleLogout}
+        loading={isLoggingOut}
+      />
 
       {/* Support Sections */}
       {supportSections.map((section, idx) => (
