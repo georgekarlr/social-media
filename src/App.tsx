@@ -4,6 +4,9 @@ import { ToastProvider } from './contexts/ToastContext'
 import { NotificationProvider } from './contexts/NotificationContext'
 import LoginForm from './components/auth/LoginForm'
 import SignupForm from './components/auth/SignupForm'
+import ForgotPasswordForm from './components/auth/ForgotPasswordForm'
+import UpdatePasswordForm from './components/auth/UpdatePasswordForm'
+import ConfirmAuth from './components/auth/ConfirmAuth'
 import ProtectedRoute from './components/ProtectedRoute'
 import Layout from './components/layout/Layout'
 import FeedPage from './pages/FeedPage'
@@ -38,6 +41,13 @@ function App() {
                         {/* Public routes */}
                         <Route path="/login" element={<LoginForm />} />
                         <Route path="/signup" element={<SignupForm />} />
+                        <Route path="/forgot-password" element={<ForgotPasswordForm />} />
+                        <Route path="/auth/confirm" element={<ConfirmAuth />} />
+                        <Route path="/account/update-password" element={
+                            <ProtectedRoute>
+                                <UpdatePasswordForm />
+                            </ProtectedRoute>
+                        } />
 
                         {/* Private routes */}
                         <Route
