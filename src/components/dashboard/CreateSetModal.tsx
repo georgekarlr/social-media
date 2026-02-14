@@ -73,8 +73,8 @@ const ItemEditorModal: React.FC<ItemEditorModalProps> = ({ isOpen, onClose, onSa
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center sm:p-4 bg-black/60 backdrop-blur-md">
-      <div className="bg-white w-full max-w-lg rounded-t-3xl sm:rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in slide-in-from-bottom sm:zoom-in-95 duration-200 h-[95vh] sm:h-auto sm:max-h-[85vh]">
+    <div className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center sm:p-4 bg-black/60 backdrop-blur-md">
+      <div className="bg-white w-full max-w-lg rounded-t-3xl sm:rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in slide-in-from-bottom sm:zoom-in-95 duration-200 h-[95vh] sm:h-auto sm:max-h-[85vh] mb-[env(safe-area-inset-bottom)] pb-[env(safe-area-inset-bottom)] sm:mb-0 sm:pb-0">
         <div className="p-4 border-b border-gray-100 flex items-center justify-between">
           <h3 className="text-lg font-bold text-gray-900">
             {itemIndex !== undefined ? 'Edit Item' : 'Add New Item'}
@@ -614,7 +614,7 @@ const ItemEditorModal: React.FC<ItemEditorModalProps> = ({ isOpen, onClose, onSa
           )}
         </div>
 
-        <div className="p-4 bg-gray-50 border-t border-gray-100 flex justify-end space-x-3">
+        <div className="p-4 bg-gray-50 border-t border-gray-100 flex justify-end space-x-3 pb-[calc(env(safe-area-inset-bottom)+1rem)] sm:pb-4">
           <button
             type="button"
             onClick={onClose}
@@ -774,8 +774,8 @@ const CreateSetModal: React.FC<CreateSetModalProps> = ({ isOpen, onClose, onSucc
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-      <div className="bg-white w-full max-w-4xl max-h-[90vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden">
+    <div className="fixed inset-0 z-[60] flex items-center justify-center p-0 sm:p-4 bg-black/50 backdrop-blur-sm">
+      <div className="bg-white w-full max-w-4xl h-full sm:h-auto sm:max-h-[90vh] sm:rounded-2xl shadow-2xl flex flex-col overflow-hidden">
         {/* Header */}
         <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-white sticky top-0 z-10">
           <h2 className="text-2xl font-bold text-gray-900 flex items-center">
@@ -967,7 +967,7 @@ const CreateSetModal: React.FC<CreateSetModalProps> = ({ isOpen, onClose, onSucc
         </div>
 
         {/* Footer */}
-        <div className="p-6 border-t border-gray-100 bg-gray-50 flex items-center justify-between">
+        <div className="p-6 border-t border-gray-100 bg-gray-50 flex items-center justify-between pb-[calc(env(safe-area-inset-bottom)+1.5rem)] sm:pb-6">
           <div className="text-sm">
             {error && <p className="text-red-600 font-medium">{error}</p>}
           </div>

@@ -20,15 +20,7 @@ import NotificationsPage from './pages/NotificationsPage'
 import MessagesPage from './pages/MessagesPage'
 import ChatPage from './pages/ChatPage'
 import UserConnectionsPage from './pages/UserConnectionsPage'
-import { 
-    Library, 
-    Search, 
-    Trophy, 
-    MessageSquare,
-    Bell, 
-    User, 
-    Settings 
-} from 'lucide-react'
+import { Trophy } from 'lucide-react'
 
 function App() {
     console.log('App rendering')
